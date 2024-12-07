@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ControleTarefasConfig(AppConfig):
+class ControleTarefaConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'controle_tarefas'
+    name = 'controle_tarefa'
