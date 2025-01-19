@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Projetos do Usuário{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Olá {{ user.username }}, comece a trabalhar nos seu projetos.</h1>
+
+    <div class="row">
+        {% for projeto in user_projetos %}
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <a href="{% url 'projeto_detalhes' projeto.id %}" class="text-decoration-none">{{ projeto.nome }}</a>
+                    </h5>
+                    <p class="card-text">{{ projeto.descricao }}</p>
+                    <div>
+                        <small>Criador: {{ projeto.criador.username }}</small>
+                        <br>
+                        <small>Membros:</small>
+                        <ul class="list-inline">
+                            {% for membro in projeto.membros.all %}
+                            <li class="list-inline-item">{{ membro.username }}</li>
+                            {% endfor %}
+                        </ul>
+                        <small>Tags:</small>
+                        <ul class="list-inline">
+                            {% for tag in projeto.tags.all %}
+                            <li class="list-inline-item badge bg-primary">{{ tag.nome }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
