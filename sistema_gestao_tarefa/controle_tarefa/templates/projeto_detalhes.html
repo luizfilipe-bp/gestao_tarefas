@@ -5,16 +5,20 @@
 {% block content %}
 <div class="container my-5">
     <h1 class="mb-4">Detalhes do Projeto</h1>
-    <form method="POST" action="#">
+    <div class="d-flex justify-content-end mb-3">
+        <button id="toggle-edit" class="btn btn-warning">Habilitar Edição</button>
+    </div>
+    <form method="POST" action="{% url 'projeto_detalhes' projeto.id %}">
         {% csrf_token %}
+        
         <div class="mb-3">
             <label for="nome" class="form-label">Nome do Projeto</label>
-            <input type="text" class="form-control" id="nome" name="nome" value="{{ projeto.nome }}" required>
+            <input type="text" class="form-control" id="nome" name="nome" value="{{ projeto.nome }}" required disabled>
         </div>
 
         <div class="mb-3">
             <label for="descricao" class="form-label">Descrição</label>
-            <textarea class="form-control" id="descricao" name="descricao" rows="4" required>{{ projeto.descricao }}</textarea>
+            <textarea class="form-control" id="descricao" name="descricao" rows="4" required disabled>{{ projeto.descricao }}</textarea>
         </div>
 
         <div class="mb-3">
@@ -24,7 +28,7 @@
 
         <div class="mb-3">
             <label for="membros" class="form-label">Membros</label>
-            <select class="form-select" id="membros" name="membros" multiple>
+            <select class="form-select" id="membros" name="membros" multiple disabled>
                 {% for usuario in usuarios %}
                 <option value="{{ usuario.id }}" {% if usuario in projeto.membros.all %}selected{% endif %}>
                     {{ usuario.username }}
@@ -40,13 +44,68 @@
         </div>
 
         <div class="mb-3">
-            <label for="tags" class="form-label">Tags</label>
-            <input type="text" class="form-control" id="tags" name="tags" value="{% for tag in tags %}{{ tag.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}">
-            <small class="form-text text-muted">Separe as tags por vírgulas.</small>
+            <label class="form-label">Tags</label>
+            <div class="d-flex flex-wrap gap-2">
+                {% for tag in tags %}
+                <span class="badge {% if tag in projeto.tags.all %}bg-primary{% else %}bg-secondary{% endif %} tag-toggle" data-tag-id="{{ tag.id }}">
+                    {{ tag.nome }}
+                </span>
+                {% endfor %}
+            </div>
+            <small class="form-text text-muted">Clique em uma tag para adicionar ou remover.</small>
         </div>
 
-        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        <div class="mb-3">
+            <label for="nova_tag" class="form-label">Adicionar Nova Tag</label>
+            <input type="text" class="form-control" id="nova_tag" name="nova_tag" placeholder="Digite o nome da nova tag">
+            <small class="form-text text-muted">Pressione Enter para adicionar.</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="save-button" disabled>Salvar Alterações</button>
         <a href="{% url 'projetos' %}" class="btn btn-secondary">Voltar</a>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tags = document.querySelectorAll('.tag-toggle');
+        tags.forEach(tag => {
+            tag.addEventListener('click', function() {
+                if (this.classList.contains('bg-primary')) {
+                    this.classList.remove('bg-primary');
+                    this.classList.add('bg-secondary');
+                } else {
+                    this.classList.remove('bg-secondary');
+                    this.classList.add('bg-primary');
+                }
+            });
+        });
+
+        const novaTagInput = document.getElementById('nova_tag');
+        novaTagInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const newTagName = this.value.trim();
+                if (newTagName) {
+                    const newTagSpan = document.createElement('span');
+                    newTagSpan.className = 'badge bg-primary tag-toggle';
+                    newTagSpan.textContent = newTagName;
+                    document.querySelector('.d-flex.flex-wrap.gap-2').appendChild(newTagSpan);
+                    this.value = '';
+                }
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleEditButton = document.getElementById('toggle-edit');
+        const formElements = document.querySelectorAll('#nome, #descricao, #membros, #nova_tag, #save-button');
+        
+        toggleEditButton.addEventListener('click', function() {
+            const isDisabled = formElements[0].disabled;
+            formElements.forEach(el => el.disabled = !isDisabled);
+            toggleEditButton.textContent = isDisabled ? 'Desabilitar Edição' : 'Habilitar Edição';
+        });
+    });
+</script>
 {% endblock %}

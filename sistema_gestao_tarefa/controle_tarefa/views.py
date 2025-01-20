@@ -30,13 +30,15 @@ def projeto_detalhes(request, id):
     projeto = Projeto.objects.get(id=id)
 
     if request.method == "POST":
-        # Atualizar as informações do projeto
         projeto.nome = request.POST.get('nome', projeto.nome)
         projeto.descricao = request.POST.get('descricao', projeto.descricao)
         membros_ids = request.POST.getlist('membros')
-        projeto.membros.set(User.objects.filter(id__in=membros_ids))  # Atualizar membros
-        tags_ids = request.POST.getlist('tags')
-        projeto.tags.set(Tag.objects.filter(id__in=tags_ids))  # Atualizar tags
+        projeto.membros.set(User.objects.filter(id__in=membros_ids))  
+        
+        nova_tag = request.POST.get('nova_tag', '').strip()
+        if nova_tag:
+            tag, created = Tag.objects.get_or_create(nome=nova_tag)
+            projeto.tags.add(tag)
         projeto.save()
         return HttpResponseRedirect(reverse('projeto_detalhes', args=[projeto.id]))
 
