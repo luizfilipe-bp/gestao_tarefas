@@ -12,6 +12,9 @@ class Projeto(models.Model):
     data_criacao = models.DateTimeField(auto_now_add=True)
     tags = models.ManyToManyField(Tag, related_name='projetos', blank=True)
 
+    def _str_(self):
+        return self.nome + ' - ' + self.criador.username + ' - ' + self.data_criacao.strftime('%d/%m/%Y')
+
 class Tarefa(models.Model):
     STATUS = [
         ('todo', 'To Do'),

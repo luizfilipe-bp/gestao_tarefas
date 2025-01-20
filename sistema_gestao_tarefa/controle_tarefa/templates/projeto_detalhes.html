@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalhes do Projeto{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="mb-4">Detalhes do Projeto</h1>
+    <form method="POST" action="#">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="nome" class="form-label">Nome do Projeto</label>
+            <input type="text" class="form-control" id="nome" name="nome" value="{{ projeto.nome }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="descricao" class="form-label">Descrição</label>
+            <textarea class="form-control" id="descricao" name="descricao" rows="4" required>{{ projeto.descricao }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="criador" class="form-label">Criador</label>
+            <input type="text" class="form-control" id="criador" value="{{ projeto.criador.username }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label for="membros" class="form-label">Membros</label>
+            <select class="form-select" id="membros" name="membros" multiple>
+                {% for usuario in usuarios %}
+                <option value="{{ usuario.id }}" {% if usuario in projeto.membros.all %}selected{% endif %}>
+                    {{ usuario.username }}
+                </option>
+                {% endfor %}
+            </select>
+            <small class="form-text text-muted">Segure Ctrl (Windows) ou Command (Mac) para selecionar múltiplos membros.</small>
+        </div>
+
+        <div class="mb-3">
+            <label for="data_criacao" class="form-label">Data de Criação</label>
+            <input type="text" class="form-control" id="data_criacao" value="{{ projeto.data_criacao }}" disabled>
+        </div>
+
+        <div class="mb-3">
+            <label for="tags" class="form-label">Tags</label>
+            <input type="text" class="form-control" id="tags" name="tags" value="{% for tag in tags %}{{ tag.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}">
+            <small class="form-text text-muted">Separe as tags por vírgulas.</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        <a href="{% url 'projetos' %}" class="btn btn-secondary">Voltar</a>
+    </form>
+</div>
+{% endblock %}

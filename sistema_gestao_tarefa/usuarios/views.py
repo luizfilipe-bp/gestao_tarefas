@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as login_django, authenticate
 from django.contrib import messages
 from django.contrib.auth import logout as logout_django
+from django.contrib.auth.models import User
+
 
 
 def login(request):
@@ -14,7 +16,7 @@ def login(request):
         user = authenticate(username=usuario, password=senha)
         if user:
             login_django(request, user)            
-            return render(request, 'projetos.html')  
+            return redirect('projetos')  
 
         else:
             messages.error(request, 'Usuário ou senha inválidos. Tente novamente.')
@@ -27,8 +29,7 @@ def cadastro(request):
         usuario = request.POST.get('usuario')
         email = request.POST.get('email')
         senha = request.POST.get('senha')
-        from django.contrib.auth.models import User
-        user = User.objects.create_user(username=usuario, password=senha)
+        user = User.objects.create_user(username=usuario, email=email, password=senha)
         user.save()
         return render(request, 'login.html')
 
