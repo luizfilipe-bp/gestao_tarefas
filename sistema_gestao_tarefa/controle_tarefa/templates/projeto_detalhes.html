@@ -4,10 +4,15 @@
 
 {% block content %}
 <div class="container my-5">
-    <h1 class="mb-4">Detalhes do Projeto</h1>
-    <div class="d-flex justify-content-end mb-3">
-        <button id="toggle-edit" class="btn btn-warning">Habilitar Edição</button>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <h1 class="mb-0">Detalhes do Projeto</h1>
+        <div>
+            <button id="toggle-edit" class="btn btn-warning me-2">Habilitar Edição</button>
+            <button id="delete-project" class="btn btn-danger" onclick="confirmDeletion('/projetos/excluir/{{projeto.id}}')">Excluir projeto
+            </button>
+        </div>
     </div>
+    
     <form method="POST" action="{% url 'projeto_detalhes' projeto.id %}">
         {% csrf_token %}
         
@@ -54,12 +59,13 @@
             </div>
             <small class="form-text text-muted">Clique em uma tag para adicionar ou remover.</small>
         </div>
-
+        <!--
         <div class="mb-3">
             <label for="nova_tag" class="form-label">Adicionar Nova Tag</label>
             <input type="text" class="form-control" id="nova_tag" name="nova_tag" placeholder="Digite o nome da nova tag">
             <small class="form-text text-muted">Pressione Enter para adicionar.</small>
         </div>
+        -->
 
         <button type="submit" class="btn btn-primary" id="save-button" disabled>Salvar Alterações</button>
         <a href="{% url 'projetos' %}" class="btn btn-secondary">Voltar</a>
@@ -107,5 +113,13 @@
             toggleEditButton.textContent = isDisabled ? 'Desabilitar Edição' : 'Habilitar Edição';
         });
     });
+
+    function confirmDeletion(url) {
+        if (confirm("Você tem certeza que deseja excluir este projeto? Essa ação não pode ser desfeita.")) {
+            window.location.href = url; 
+        }
+    }
+
+
 </script>
 {% endblock %}
