@@ -76,12 +76,8 @@ def projeto_detalhes(request, id):
         tags_nomes = request.POST.get('tags', '').split(',')
         tags_atualizadas = []
         for tag_nome in tags_nomes:
-            tag_nome = tag_nome.strip()
-            if tag_nome:  # Ignora tags vazias ou com apenas espaços
-                tag, _ = Tag.objects.get_or_create(nome=tag_nome)
-                tags_atualizadas.append(tag)
-
-        projeto.tags.set(tags_atualizadas)  # Substitui as tags existentes pelas novas
+            tag, _ = Tag.objects.get_or_create(nome=tag_nome.strip())
+            projeto.tags.add(tag)
 
         return HttpResponseRedirect(reverse('projeto_detalhes', args=[projeto.id]))
 
