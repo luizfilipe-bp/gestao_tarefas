@@ -53,7 +53,7 @@ def projeto_adicionar(request):
 
         return redirect('projetos')
 
-    usuarios = User.objects.exclude(id=request.user.id)
+    usuarios = User.objects.exclude(id=request.user.id).exclude(is_superuser=True).exclude(is_staff=True)
     tags = Tag.objects.all()
     return render(request, 'projeto_adicionar.html', {'usuarios': usuarios, 'tags': tags})
 
@@ -64,20 +64,27 @@ def projeto_detalhes(request, id):
     projeto = Projeto.objects.get(id=id)
 
     if request.method == "POST":
-        projeto.nome = request.POST.get('nome', projeto.nome)
-        projeto.descricao = request.POST.get('descricao', projeto.descricao)
-        membros_ids = request.POST.getlist('membros')
-        projeto.membros.set(User.objects.filter(id__in=membros_ids))  
-        
-        nova_tag = request.POST.get('nova_tag', '').strip()
-        if nova_tag:
-            tag, created = Tag.objects.get_or_create(nome=nova_tag)
-            projeto.tags.add(tag)
+        projeto.nome = request.POST.get('nome', projeto.nome).strip()
+        projeto.descricao = request.POST.get('descricao', projeto.descricao).strip()
         projeto.save()
+
+        membros_ids = request.POST.get('membros', '')
+        membros_ids = [int(mid) for mid in membros_ids.split(',') if mid.isdigit()]
+        projeto.membros.set(User.objects.filter(id__in=membros_ids))
+
+        # Atualiza as tags do projeto
+        tags_nomes = request.POST.get('tags', '').split(',')
+        tags_atualizadas = []
+        for tag_nome in tags_nomes:
+            tag_nome = tag_nome.strip()
+            if tag_nome:  # Ignora tags vazias ou com apenas espaços
+                tag, _ = Tag.objects.get_or_create(nome=tag_nome)
+                tags_atualizadas.append(tag)
+
+        projeto.tags.set(tags_atualizadas)  # Substitui as tags existentes pelas novas
 
         return HttpResponseRedirect(reverse('projeto_detalhes', args=[projeto.id]))
 
-    
     return render(request, 'projeto_detalhes.html', {
         'projeto': projeto,
         'usuarios': User.objects.exclude(id=projeto.criador.id)

@@ -1,20 +1,17 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     const membrosContainer = document.getElementById('membros-container');
+    const membros = document.querySelectorAll('.membro-toggle');
     const selectedMembrosInput = document.getElementById('selected-membros');
 
-    if (!membrosContainer || !selectedMembrosInput) return;
-
-    // Adiciona evento de clique para os membros
-    membrosContainer.addEventListener('click', function (event) {
-        if (event.target.classList.contains('membro-toggle')) {
-            const membroBadge = event.target;
-            membroBadge.classList.toggle('bg-primary');
-            membroBadge.classList.toggle('bg-secondary');
+    // Adiciona evento de clique às tags de membros
+    membros.forEach(membro => {
+        membro.addEventListener('click', function() {
+            this.classList.toggle('bg-primary');
+            this.classList.toggle('bg-secondary');
             updateSelectedMembros();
-        }
+        });
     });
 
-    // Atualiza o campo hidden com os membros selecionados
     function updateSelectedMembros() {
         const selectedMembros = Array.from(document.querySelectorAll('.membro-toggle.bg-primary'))
             .map(membro => membro.dataset.membroId);

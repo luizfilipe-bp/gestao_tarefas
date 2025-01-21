@@ -1,13 +1,15 @@
 <!-- Tags Container -->
 <div id="tags-container" class="d-flex flex-wrap gap-2">
     {% for tag in tags %}
-    <span class="badge bg-secondary tag-toggle" data-tag-id="{{ tag.id }}">
+    <span 
+        class="badge {% if tag in projeto.tags.all %}bg-primary{% else %}bg-secondary{% endif %} tag-toggle" 
+        data-tag-id="{{ tag.id }}">
         {{ tag.nome }}
     </span>
     {% endfor %}
 </div>
-<input type="hidden" id="selected-tags" name="tags">
-<small class="form-text text-muted">Clique em uma tag para selecioná-la ou deselecioná-la.</small>
+<input type="hidden" id="selected-tags" name="tags" value="{% for tag in projeto.tags.all %}{{ tag.id }},{% endfor %}">
+<small class="form-text text-muted">Clique em uma tag para adicioná-la ou removê-la.</small>
 
 <!-- Campo para adicionar nova tag -->
 <div class="mb-3">

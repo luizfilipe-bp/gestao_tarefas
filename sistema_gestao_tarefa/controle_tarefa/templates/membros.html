@@ -1,0 +1,28 @@
+<div class="mb-3">
+    <label for="membros" class="form-label">Selecione os Membros</label>
+    <div id="membros-container" class="d-flex flex-wrap gap-2">
+        {% for usuario in usuarios %}
+        <span 
+            class="badge {% if usuario in projeto.membros.all %}bg-primary{% else %}bg-secondary{% endif %} membro-toggle" 
+            data-membro-id="{{ usuario.id }}">
+            {{ usuario.username }}
+        </span>
+        {% endfor %}
+    </div>
+    <input type="hidden" id="selected-membros" name="membros" value="{% for membro in projeto.membros.all %}{{ membro.id }},{% endfor %}">
+    <small class="form-text text-muted">Clique em um membro para selecioná-lo ou deselecioná-lo.</small>
+</div>
+
+<!--
+<div class="mb-3">
+    <label for="membros" class="form-label">Membros</label>
+    <select class="form-select" id="membros" name="membros" multiple disabled>
+        {% for usuario in usuarios %}
+        <option value="{{ usuario.id }}" {% if usuario in projeto.membros.all %}selected{% endif %}>
+            {{ usuario.username }}
+        </option>
+        {% endfor %}
+    </select>
+    <small class="form-text text-muted">Segure Ctrl (Windows) ou Command (Mac) para selecionar múltiplos membros.</small>
+</div>
+-->
