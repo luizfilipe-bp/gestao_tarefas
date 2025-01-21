@@ -17,9 +17,9 @@ class Projeto(models.Model):
 
 class Tarefa(models.Model):
     STATUS = [
-        ('todo', 'To Do'),
-        ('em_andamento', 'Em andamento'),
-        ('feito', 'Feito'),
+        ('To Do', 'todo'),
+        ('Em andamento', 'em_andamento'),
+        ('Feito', 'feito'),
     ]
 
     titulo = models.CharField(max_length=200)

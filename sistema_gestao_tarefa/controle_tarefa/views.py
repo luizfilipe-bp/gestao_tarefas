@@ -103,8 +103,12 @@ def projeto_detalhes(request, id):
 def tarefas(request):
     usuario_logado = request.user
 
-    tarefas_do_usuario = Tarefa.objects.filter(atribuido_a=usuario_logado)
-    print(tarefas_do_usuario)
-    template = loader.get_template('tarefas.html')
-    return HttpResponse(template.render({'user': usuario_logado, 'tarefas_do_usuario': tarefas_do_usuario}))
+    tarefas_do_usuario = Tarefa.objects.filter(atribuido_a=usuario_logado).order_by('data_criacao')
+
+    ordenar = request.GET.get('ordenar')
+    if ordenar == 'prazo':
+        print()
+        tarefas_do_usuario = tarefas_do_usuario.order_by('data_prazo_final')
+
+    return HttpResponse(render(request, 'tarefas.html', {'user': usuario_logado, 'tarefas_do_usuario': tarefas_do_usuario}))
     
