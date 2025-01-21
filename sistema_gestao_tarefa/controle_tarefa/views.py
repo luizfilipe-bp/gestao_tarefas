@@ -7,6 +7,7 @@ from django.urls import reverse
 
 from .models import Projeto
 from .models import Tag
+from .models import Tarefa
 from django.contrib.auth.models import User
 
 @login_required(login_url='/auth/login')
@@ -95,3 +96,15 @@ def projeto_detalhes(request, id):
                                 .exclude(is_staff=True),
         'tags': Tag.objects.all(),
     })
+
+
+
+@login_required(login_url='/auth/login')
+def tarefas(request):
+    usuario_logado = request.user
+
+    tarefas_do_usuario = Tarefa.objects.filter(atribuido_a=usuario_logado)
+    print(tarefas_do_usuario)
+    template = loader.get_template('tarefas.html')
+    return HttpResponse(template.render({'user': usuario_logado, 'tarefas_do_usuario': tarefas_do_usuario}))
+    
