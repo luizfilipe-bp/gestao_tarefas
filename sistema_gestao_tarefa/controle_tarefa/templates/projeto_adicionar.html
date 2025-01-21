@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}   
 
 {% block title %}Cadastro de Novo Projeto{% endblock %}
 
@@ -21,83 +22,28 @@
         </div>
 
         <!-- Seleção de Membros -->
+
         <div class="mb-3">
             <label for="membros" class="form-label">Selecione os Membros</label>
-            <select class="form-select" id="membros" name="membros" multiple>
+            <div id="membros-container" class="d-flex flex-wrap gap-2">
                 {% for usuario in usuarios %}
-                <option value="{{ usuario.id }}">{{ usuario.username }}</option>
-                {% endfor %}
-            </select>
-            <small class="form-text text-muted">Segure Ctrl (Windows) ou Command (Mac) para selecionar múltiplos membros.</small>
-        </div>
-
-        <!-- Seleção de Tags -->
-        <div class="mb-3">
-            <label class="form-label">Tags</label>
-            <div class="d-flex flex-wrap gap-2">
-                {% for tag in tags %}
-                <span class="badge bg-secondary tag-toggle" data-tag-id="{{ tag.id }}" >
-                    {{ tag.nome }}
+                <span class="badge bg-secondary membro-toggle" data-membro-id="{{ usuario.id }}">
+                    {{ usuario.username }}
                 </span>
                 {% endfor %}
             </div>
-            <input type="hidden" id="selected-tags" name="tags">
-            <small class="form-text text-muted">Clique em uma tag para adicioná-la ao projeto.</small>
+            <input type="hidden" id="selected-membros" name="membros">
+            <small class="form-text text-muted">Clique em um membro para selecioná-lo ou deselecioná-lo.</small>
         </div>
-        
-        <!-- Adicionar Nova Tag 
-        <div class="mb-3">
-            <label for="nova_tag" class="form-label">Adicionar Nova Tag</label>
-            <input type="text" class="form-control" id="nova_tag" name="nova_tag" placeholder="Digite o nome da nova tag">
-            <small class="form-text text-muted">Pressione Enter para adicionar.</small>
-        </div>
-        -->
+
+
+        {% include 'tags.html' %}        
         
         <button type="submit" class="btn btn-primary">Salvar Projeto</button>
         <a href="{% url 'projetos' %}" class="btn btn-secondary">Voltar</a>
     </form>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tags = document.querySelectorAll('.tag-toggle');
-        const selectedTagsInput = document.getElementById('selected-tags');
-
-        tags.forEach(tag => {
-            tag.addEventListener('click', function() {
-                const tagId = this.dataset.tagId;
-                if (this.classList.contains('bg-primary')) {
-                    this.classList.remove('bg-primary');
-                    this.classList.add('bg-secondary');
-                } else {
-                    this.classList.remove('bg-secondary');
-                    this.classList.add('bg-primary');
-                }
-                updateSelectedTags();
-            });
-        });
-
-        function updateSelectedTags() {
-            const selectedTags = Array.from(document.querySelectorAll('.tag-toggle.bg-primary'))
-                .map(tag => tag.dataset.tagId);
-            selectedTagsInput.value = selectedTags.join(',');
-        }
-
-        const novaTagInput = document.getElementById('nova_tag');
-        novaTagInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                const newTagName = this.value.trim();
-                if (newTagName) {
-                    const newTagSpan = document.createElement('span');
-                    newTagSpan.className = 'badge bg-primary tag-toggle';
-                    newTagSpan.textContent = newTagName;
-                    newTagSpan.dataset.tagId = 'new-' + newTagName; // Identificador único
-                    document.querySelector('.d-flex.flex-wrap.gap-2').appendChild(newTagSpan);
-                    this.value = '';
-                }
-            }
-        });
-    });
-</script>
+<script src="{% static 'tags.js' %}"></script>
+<script src="{% static 'membros.js' %}"></script>
 {% endblock %}

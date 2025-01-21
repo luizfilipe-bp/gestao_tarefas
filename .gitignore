@@ -162,3 +162,5 @@ cython_debug/
 TODO.md
 
 /code/*
+
+sistema_gestao_tarefa/productionfiles/*

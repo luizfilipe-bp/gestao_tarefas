@@ -31,9 +31,8 @@ def projeto_adicionar(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')
         descricao = request.POST.get('descricao')
-        membros_ids = request.POST.getlist('membros')
-        tags_ids = request.POST.get('tags').split(',')
-        nova_tag_nome = request.POST.get('nova_tag')
+        membros_ids = request.POST.get('membros', '')
+        tags_nomes = request.POST.get('tags').split(',')
 
         # Criar projeto
         projeto = Projeto.objects.create(
@@ -42,17 +41,17 @@ def projeto_adicionar(request):
             criador=request.user
         )
 
+        # Associar membros
+        membros_ids = [int(mid) for mid in membros_ids.split(',') if mid.isdigit()]
         membros = User.objects.filter(id__in=membros_ids)
         projeto.membros.set(membros)
 
-        tags = Tag.objects.filter(id__in=[tid for tid in tags_ids if tid.isdigit()])
-        projeto.tags.set(tags)
+        # Processar tags (verificar se existe ou criar nova)
+        for tag_nome in tags_nomes:
+            tag, _ = Tag.objects.get_or_create(nome=tag_nome.strip())
+            projeto.tags.add(tag)
 
-        if nova_tag_nome:
-            nova_tag, created = Tag.objects.get_or_create(nome=nova_tag_nome)
-            projeto.tags.add(nova_tag)
-
-        return redirect('projetos') 
+        return redirect('projetos')
 
     usuarios = User.objects.exclude(id=request.user.id)
     tags = Tag.objects.all()
@@ -75,9 +74,10 @@ def projeto_detalhes(request, id):
             tag, created = Tag.objects.get_or_create(nome=nova_tag)
             projeto.tags.add(tag)
         projeto.save()
+
         return HttpResponseRedirect(reverse('projeto_detalhes', args=[projeto.id]))
 
-    # Renderizar a página com as informações do projeto
+    
     return render(request, 'projeto_detalhes.html', {
         'projeto': projeto,
         'usuarios': User.objects.exclude(id=projeto.criador.id)

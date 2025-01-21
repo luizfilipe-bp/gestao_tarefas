@@ -59,13 +59,13 @@
             </div>
             <small class="form-text text-muted">Clique em uma tag para adicionar ou remover.</small>
         </div>
-        <!--
+        
         <div class="mb-3">
             <label for="nova_tag" class="form-label">Adicionar Nova Tag</label>
             <input type="text" class="form-control" id="nova_tag" name="nova_tag" placeholder="Digite o nome da nova tag">
             <small class="form-text text-muted">Pressione Enter para adicionar.</small>
         </div>
-        -->
+        
 
         <button type="submit" class="btn btn-primary" id="save-button" disabled>Salvar Alterações</button>
         <a href="{% url 'projetos' %}" class="btn btn-secondary">Voltar</a>
@@ -73,36 +73,6 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tags = document.querySelectorAll('.tag-toggle');
-        tags.forEach(tag => {
-            tag.addEventListener('click', function() {
-                if (this.classList.contains('bg-primary')) {
-                    this.classList.remove('bg-primary');
-                    this.classList.add('bg-secondary');
-                } else {
-                    this.classList.remove('bg-secondary');
-                    this.classList.add('bg-primary');
-                }
-            });
-        });
-
-        const novaTagInput = document.getElementById('nova_tag');
-        novaTagInput.addEventListener('keydown', function(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                const newTagName = this.value.trim();
-                if (newTagName) {
-                    const newTagSpan = document.createElement('span');
-                    newTagSpan.className = 'badge bg-primary tag-toggle';
-                    newTagSpan.textContent = newTagName;
-                    document.querySelector('.d-flex.flex-wrap.gap-2').appendChild(newTagSpan);
-                    this.value = '';
-                }
-            }
-        });
-    });
-
     document.addEventListener('DOMContentLoaded', function() {
         const toggleEditButton = document.getElementById('toggle-edit');
         const formElements = document.querySelectorAll('#nome, #descricao, #membros, #nova_tag, #save-button');
@@ -119,6 +89,7 @@
             window.location.href = url; 
         }
     }
+</script>
 
 
 </script>

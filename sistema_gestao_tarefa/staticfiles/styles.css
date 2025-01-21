@@ -1,0 +1,85 @@
+:root {
+    --bg-color-dark: #121212;
+    --text-color-dark: #e0e0e0;
+    --navbar-color-dark: #212529;
+    --card-bg-color-dark: #212529;
+
+    --bg-color-light: #f8f9fa;
+    --text-color-light: #212529;
+    --navbar-color-light: #e9ecef;
+    --card-bg-color-light: #ffffff;
+}
+
+body {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+    transition: background-color 0.3s, color 0.3s;
+}
+.navbar {
+    background-color: var(--navbar-color-dark);
+    transition: background-color 0.3s;
+}
+.navbar-brand, .nav-link {
+    color: var(--text-color-dark) !important;
+    transition: color 0.3s;
+}
+.navbar-toggler {
+    border-color: var(--text-color-dark);
+}
+.navbar-toggler-icon {
+    background-color: var(--text-color-dark);
+    mask: url('data:image/svg+xml,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 30 30%22%3e%3cpath stroke=%22rgba%28255, 255, 255, 0.7%29%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-miterlimit=%2210%22 d=%22M4 7h22M4 15h22M4 23h22%22/%3e%3c/svg%3e');
+    -webkit-mask: url('data:image/svg+xml,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 30 30%22%3e%3cpath stroke=%22rgba%28255, 255, 255, 0.7%29%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-miterlimit=%2210%22 d=%22M4 7h22M4 15h22M4 23h22%22/%3e%3c/svg%3e');
+}
+.footer {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+    padding: 20px 0;
+    text-align: center;
+}
+.btn-primary {
+    background-color: var(--navbar-color-dark);
+    border-color: var(--navbar-color-dark);
+}
+.btn-primary:hover {
+    background-color: #495057;
+    border-color: #495057;
+}
+.card {
+    background-color: var(--card-bg-color-dark);
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5rem;
+    color: var(--text-color-dark);
+}
+
+body.light-mode {
+    background-color: var(--bg-color-light);
+    color: var(--text-color-light);
+}
+body.light-mode .navbar {
+    background-color: var(--navbar-color-light);
+}
+body.light-mode .navbar-brand, body.light-mode .nav-link {
+    color: var(--text-color-light) !important;
+}
+body.light-mode .navbar-toggler {
+    border-color: var(--text-color-light);
+}
+body.light-mode .navbar-toggler-icon {
+    background-color: var(--text-color-light);
+    mask: url('data:image/svg+xml,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 30 30%22%3e%3cpath stroke=%22rgba%280, 0, 0, 0.7%29%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-miterlimit=%2210%22 d=%22M4 7h22M4 15h22M4 23h22%22/%3e%3c/svg%3e');
+    -webkit-mask: url('data:image/svg+xml,%3csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 30 30%22%3e%3cpath stroke=%22rgba%280, 0, 0, 0.7%29%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-miterlimit=%2210%22 d=%22M4 7h22M4 15h22M4 23h22%22/%3e%3c/svg%3e');
+}
+body.light-mode .footer {
+    background-color: var(--navbar-color-light);
+    color: var(--text-color-light);
+}
+body.light-mode .btn-primary {
+    background-color: var(--navbar-color-light);
+    border-color: var(--navbar-color-light);
+}
+body.light-mode .card {
+    background-color: var(--card-bg-color-light);
+    color: var(--text-color-light);
+}

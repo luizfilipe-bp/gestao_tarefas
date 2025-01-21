@@ -1,0 +1,17 @@
+<!-- Tags Container -->
+<div id="tags-container" class="d-flex flex-wrap gap-2">
+    {% for tag in tags %}
+    <span class="badge bg-secondary tag-toggle" data-tag-id="{{ tag.id }}">
+        {{ tag.nome }}
+    </span>
+    {% endfor %}
+</div>
+<input type="hidden" id="selected-tags" name="tags">
+<small class="form-text text-muted">Clique em uma tag para selecioná-la ou deselecioná-la.</small>
+
+<!-- Campo para adicionar nova tag -->
+<div class="mb-3">
+    <label for="nova_tag" class="form-label">Adicionar Nova Tag</label>
+    <input type="text" class="form-control" id="nova_tag" name="nova_tag" placeholder="Digite o nome da nova tag">
+    <small class="form-text text-muted">Pressione Enter para adicionar.</small>
+</div>
