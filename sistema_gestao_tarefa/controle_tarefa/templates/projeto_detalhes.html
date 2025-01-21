@@ -40,7 +40,7 @@
 
         {% include 'tags.html' %}
 
-        <button type="submit" class="btn btn-primary" id="save-button" disabled>Salvar Alterações</button>
+        <button id="save-button" type="submit" class="btn btn-primary opacity-75" disabled>Salvar Alterações</button>
         <a href="{% url 'projetos' %}" class="btn btn-secondary">Voltar</a>
     </form>
 </div>
@@ -51,19 +51,64 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const toggleEditButton = document.getElementById('toggle-edit');
-        const formElements = document.querySelectorAll('#nome, #descricao, #membros, #nova_tag, #save-button');
-        
-        toggleEditButton.addEventListener('click', function() {
-            const isDisabled = formElements[0].disabled;
-            formElements.forEach(el => el.disabled = !isDisabled);
-            toggleEditButton.textContent = isDisabled ? 'Desabilitar Edição' : 'Habilitar Edição';
-        });
-    });
+        const saveButton = document.getElementById('save-button');
+        const formElements = document.querySelectorAll('#nome, #descricao, #nova_tag');
+        const tagElements = document.querySelectorAll('.tag-toggle');
+        const membroElements = document.querySelectorAll('.membro-toggle');
+        let isEditing = true;
 
-    function confirmDeletion(url) {
-        if (confirm("Você tem certeza que deseja excluir este projeto? Essa ação não pode ser desfeita.")) {
-            window.location.href = url; 
+        // Função para alternar o estado de edição
+        function toggleEdit() {
+            // Atualiza o estado das tags e membros (habilita ou desabilita cliques)
+            tagElements.forEach(tag => {
+                if (isEditing) {
+                    tag.addEventListener('click', toggleTagState);
+                } else {
+                    tag.removeEventListener('click', toggleTagState);
+                }
+            });
+            
+            membroElements.forEach(membro => {
+                if (isEditing) {
+                    membro.addEventListener('click', toggleMembroState);
+                } else {
+                    membro.removeEventListener('click', toggleMembroState);
+                }
+            });
+            isEditing = !isEditing;
+            formElements.forEach(el => el.disabled = !isEditing);
+            saveButton.disabled = !isEditing;   
+
+            toggleEditButton.textContent = isEditing ? 'Desabilitar Edição' : 'Habilitar Edição';
+            toggleEditButton.classList.toggle('btn-warning', !isEditing);
+            toggleEditButton.classList.toggle('btn-success', isEditing);
         }
-    }
+
+        function toggleTagState() {
+            this.classList.toggle('bg-primary');
+            this.classList.toggle('bg-secondary');
+            updateSelectedTags();
+        }
+
+        function toggleMembroState() {
+            this.classList.toggle('bg-primary');
+            this.classList.toggle('bg-secondary');
+            updateSelectedMembros();
+        }
+
+        function updateSelectedTags() {
+            const selectedTags = Array.from(document.querySelectorAll('.tag-toggle.bg-primary'))
+                .map(tag => tag.dataset.tagId);
+            document.getElementById('selected-tags').value = selectedTags.join(',');
+        }
+
+        function updateSelectedMembros() {
+            const selectedMembros = Array.from(document.querySelectorAll('.membro-toggle.bg-primary'))
+                .map(membro => membro.dataset.membroId);
+            document.getElementById('selected-membros').value = selectedMembros.join(',');
+        }
+        toggleEdit();
+        toggleEditButton.addEventListener('click', toggleEdit);
+    });
 </script>
 {% endblock %}

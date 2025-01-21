@@ -32,7 +32,7 @@ def projeto_adicionar(request):
         nome = request.POST.get('nome')
         descricao = request.POST.get('descricao')
         membros_ids = request.POST.get('membros', '')
-        tags_nomes = request.POST.get('tags').split(',')
+        tags_nomes = request.POST.get('tags', '').split(',')
 
         # Criar projeto
         projeto = Projeto.objects.create(
@@ -46,10 +46,12 @@ def projeto_adicionar(request):
         membros = User.objects.filter(id__in=membros_ids)
         projeto.membros.set(membros)
 
-        # Processar tags (verificar se existe ou criar nova)
+        # Processar tags (verificar se existe ou criar nova, evitando tags vazias)
         for tag_nome in tags_nomes:
-            tag, _ = Tag.objects.get_or_create(nome=tag_nome.strip())
-            projeto.tags.add(tag)
+            tag_nome = tag_nome.strip()
+            if tag_nome:  # Apenas processa se o nome da tag não estiver vazio
+                tag, _ = Tag.objects.get_or_create(nome=tag_nome)
+                projeto.tags.add(tag)
 
         return redirect('projetos')
 
@@ -72,11 +74,16 @@ def projeto_detalhes(request, id):
         membros_ids = [int(mid) for mid in membros_ids.split(',') if mid.isdigit()]
         projeto.membros.set(User.objects.filter(id__in=membros_ids))
 
-        # Atualiza as tags do projeto
-        tags_nomes = request.POST.get('tags', '').split(',')
-        tags_atualizadas = []
+        tags_input = request.POST.get('tags', '')  
+        tags = [tag.strip() for tag in tags_input.split(',') if tag.strip()] 
+
+        tag_ids = [int(tag) for tag in tags if tag.isdigit()]  
+        tags_nomes = [tag for tag in tags if not tag.isdigit()]  
+
+        projeto.tags.set(Tag.objects.filter(id__in=tag_ids))
+
         for tag_nome in tags_nomes:
-            tag, _ = Tag.objects.get_or_create(nome=tag_nome.strip())
+            tag, _ = Tag.objects.get_or_create(nome=tag_nome)
             projeto.tags.add(tag)
 
         return HttpResponseRedirect(reverse('projeto_detalhes', args=[projeto.id]))
