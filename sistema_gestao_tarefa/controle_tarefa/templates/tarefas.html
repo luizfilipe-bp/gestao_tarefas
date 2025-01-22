@@ -2,10 +2,9 @@
 
 {% block content %}
 <div class="container my-5">
-    <h1 class="mb-4">Minhas Tarefas</h1>
-
-    {% if tarefas_do_usuario %}
-        <div class="d-flex justify-content-end mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-4 ">Minhas Tarefas</h1>
+        {% if tarefas_do_usuario %}
             <form method="get">
                 <label for="ordenar" class="me-2">Ordenar por:</label>
                 <select id="ordenar" name="ordenar" class="form-select d-inline-block w-auto" onchange="this.form.submit()">
@@ -13,8 +12,9 @@
                     <option value="prazo" {% if request.GET.ordenar == 'prazo' %}selected{% endif %}>Prazo Final</option>
                 </select>
             </form>
-        </div>
-        
+        {% endif %}
+    </div>
+        {% if tarefas_do_usuario %}
         <ul class="list-group">
             {% for tarefa in tarefas_do_usuario %}
                 <li class="list-group-item">

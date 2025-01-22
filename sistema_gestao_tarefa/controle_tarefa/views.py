@@ -28,6 +28,13 @@ def projeto_excluir(request, id):
 
 
 @login_required(login_url='/auth/login')
+def projeto_detalhes(request, id):
+    projeto = Projeto.objects.get(id=id)
+    tarefas_do_projeto = Tarefa.objects.filter(projeto=projeto)
+
+    return render(request, 'projeto_detalhes.html', {'projeto': projeto, 'tarefas_do_projeto': tarefas_do_projeto})
+
+@login_required(login_url='/auth/login')
 def projeto_adicionar(request):
     if request.method == 'POST':
         nome = request.POST.get('nome')

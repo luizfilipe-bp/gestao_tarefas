@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow mb-5">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0 text-light-gray">{{ projeto.nome }}</h2>
+            <div>
+                <a href="{% url 'projeto_alterar' projeto.id %}" class="btn btn-light btn-sm me-2">Editar Projeto</a>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="mb-3"><strong>Descrição:</strong> {{ projeto.descricao }}</p>
+            <div class="d-flex justify-content-between">
+                <p class="mb-3"><strong>Criador:</strong> {{ projeto.criador.username }}</p>
+                <p class="mb-3"><strong>Data de Criação:</strong> {{ projeto.data_criacao|date:"d/m/Y H:i" }}</p>
+            </div>
+            <p class="mb-3"><strong>Membros:</strong>
+                {% for membro in projeto.membros.all %}
+                    <span class="badge bg-secondary">{{ membro.username }}</span>
+                {% empty %}
+                    <span class="text-muted">Nenhum membro</span>
+                {% endfor %}
+            </p>
+            <p class="mb-0"><strong>Tags:</strong>
+                {% for tag in projeto.tags.all %}
+                    <span class="badge bg-primary">{{ tag.nome }}</span>
+                {% empty %}
+                    <span class="text-muted">Nenhuma tag</span>
+                {% endfor %}
+            </p>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">Tarefas do Projeto</h3>
+        <a href="#" class="btn btn-success">Adicionar nova Tarefa</a>
+    </div>
+    {% if tarefas_do_projeto %}
+        <ul class="list-group">
+            {% for tarefa in tarefas_do_projeto %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-1">{{ tarefa.titulo }}</h5>
+                        <span class="badge {% if tarefa.status == 'Feito' %}bg-success{% elif tarefa.status == 'Em andamento' %}bg-warning text-dark{% elif tarefa.status == 'To Do' %}bg-danger{% else %}bg-secondary{% endif %} px-3 py-2">
+                            {{ tarefa.status }}
+                        </span>
+                    </div>
+                    <p class="mb-1 text-muted">{{ tarefa.descricao }}</p>
+                    <div class="d-flex justify-content-between">
+                        <span><strong>Criado em:</strong> {{ tarefa.data_criacao|date:"d/m/Y H:i" }}</span>
+                        <span class="ms-auto"><strong>Prazo final:</strong> {{ tarefa.data_prazo_final|date:"d/m/Y" }}</span>
+                    </div>
+                    <p class="mb-0">
+                        <strong>Tags:</strong>
+                        {% for tag in tarefa.tags.all %}
+                            <span class="badge bg-primary">{{ tag.nome }}</span>
+                        {% empty %}
+                            <span class="text-muted">Nenhuma tag</span>
+                        {% endfor %}
+                    </p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">Este projeto ainda não possui tarefas.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
