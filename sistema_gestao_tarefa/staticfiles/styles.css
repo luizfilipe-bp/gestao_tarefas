@@ -42,8 +42,8 @@ body {
     border-color: var(--navbar-color-dark);
 }
 .btn-primary:hover {
-    background-color: #495057;
-    border-color: #495057;
+    background-color: #035db7;
+    border-color: #035db7;
 }
 .card {
     background-color: var(--card-bg-color-dark);

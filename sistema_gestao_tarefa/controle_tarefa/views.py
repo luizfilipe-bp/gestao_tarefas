@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.contrib import messages
+
 
 from .models import Projeto
 from .models import Tag
@@ -80,21 +82,27 @@ def projeto_alterar(request, id):
 
         membros_ids = request.POST.get('membros', '')
         membros_ids = [int(mid) for mid in membros_ids.split(',') if mid.isdigit()]
+        
+        membros_atuais = set(projeto.membros.values_list('id', flat=True))
+        novos_membros = set(membros_ids)
+        membros_removidos = membros_atuais - novos_membros
+        
         projeto.membros.set(User.objects.filter(id__in=membros_ids))
 
-        tags_input = request.POST.get('tags', '')  
-        tags = [tag.strip() for tag in tags_input.split(',') if tag.strip()] 
+        if membros_removidos:
+            Tarefa.objects.filter(projeto=projeto, atribuido_a__id__in=membros_removidos).update(atribuido_a=None)
 
-        tag_ids = [int(tag) for tag in tags if tag.isdigit()]  
-        tags_nomes = [tag for tag in tags if not tag.isdigit()]  
+        tags_input = request.POST.get('tags', '')
+        tags = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
+        tag_ids = [int(tag) for tag in tags if tag.isdigit()]
+        tags_nomes = [tag for tag in tags if not tag.isdigit()]
 
         projeto.tags.set(Tag.objects.filter(id__in=tag_ids))
-
         for tag_nome in tags_nomes:
             tag, _ = Tag.objects.get_or_create(nome=tag_nome)
             projeto.tags.add(tag)
 
-        return HttpResponseRedirect(reverse('projeto_alterar', args=[projeto.id]))
+        return HttpResponseRedirect(reverse('projetos'))
 
     return render(request, 'projeto_alterar.html', {
         'projeto': projeto,
@@ -119,3 +127,39 @@ def tarefas(request):
 
     return HttpResponse(render(request, 'tarefas.html', {'user': usuario_logado, 'tarefas_do_usuario': tarefas_do_usuario}))
     
+
+@login_required(login_url='/auth/login')
+def tarefa_adicionar(request, id_projeto):
+    projeto = get_object_or_404(Projeto, id=id_projeto)
+
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        descricao = request.POST.get('descricao', '')
+        atribuido_a_id = request.POST.get('atribuido_a')
+        status = request.POST.get('status', 'To Do')
+        data_prazo_final = request.POST.get('data_prazo_final')
+        tags_input = request.POST.get('tags', '')
+
+        atribuido_a = User.objects.filter(id=atribuido_a_id).first() if atribuido_a_id else None
+
+        tarefa = Tarefa.objects.create(
+            titulo=titulo,
+            descricao=descricao,
+            projeto=projeto,
+            atribuido_a=atribuido_a,
+            status=status,
+            data_prazo_final=data_prazo_final
+        )
+
+        if tags_input:
+            tag_nomes = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
+            for nome in tag_nomes:
+                tag, created = Tag.objects.get_or_create(nome=nome)
+                tarefa.tags.add(tag)
+
+        tarefa.save()
+        messages.success(request, 'Tarefa adicionada com sucesso!')
+        return redirect('projeto_detalhes', id=projeto.id)
+
+    tags = Tag.objects.all()
+    return render(request, 'tarefa_adicionar.html', {'projeto': projeto, 'tags': tags})

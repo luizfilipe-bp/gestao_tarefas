@@ -35,7 +35,7 @@
                     <p class="mb-0">
                         <strong>Tags:</strong>
                         {% for tag in tarefa.tags.all %}
-                            <span class="badge bg-secondary">{{ tag.nome }}</span>
+                            <span class="badge bg-primary">{{ tag.nome }}</span>
                         {% empty %}
                             <span class="text-muted">Nenhuma tag</span>
                         {% endfor %}
