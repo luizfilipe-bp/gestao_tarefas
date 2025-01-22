@@ -63,7 +63,7 @@ def projeto_adicionar(request):
 
 
 @login_required(login_url='/auth/login')
-def projeto_detalhes(request, id):
+def projeto_alterar(request, id):
     projeto = Projeto.objects.get(id=id)
 
     if request.method == "POST":
@@ -87,9 +87,9 @@ def projeto_detalhes(request, id):
             tag, _ = Tag.objects.get_or_create(nome=tag_nome)
             projeto.tags.add(tag)
 
-        return HttpResponseRedirect(reverse('projeto_detalhes', args=[projeto.id]))
+        return HttpResponseRedirect(reverse('projeto_alterar', args=[projeto.id]))
 
-    return render(request, 'projeto_detalhes.html', {
+    return render(request, 'projeto_alterar.html', {
         'projeto': projeto,
         'usuarios': User.objects.exclude(id=projeto.criador.id)
                                 .exclude(is_superuser=True)
