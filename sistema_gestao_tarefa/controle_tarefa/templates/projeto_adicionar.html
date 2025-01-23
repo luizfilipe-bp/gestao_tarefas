@@ -5,28 +5,31 @@
 
 {% block content %}
 <div class="container my-5">
-    <h1 class="mb-4">Cadastrar Novo Projeto</h1>
-    <form method="POST" action="{% url 'projeto_adicionar' %}">
-        {% csrf_token %}
-        
-        <div class="mb-3">
-            <label for="nome" class="form-label">Nome do Projeto</label>
-            <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o nome do projeto" required>
+    <div class="card shadow">
+        <div class="card-body">
+            <h1 class="mb-4">Cadastrar Novo Projeto</h1>
+            <form method="POST" action="{% url 'projeto_adicionar' %}">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome do Projeto</label>
+                    <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o nome do projeto" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="descricao" class="form-label">Descrição</label>
+                    <textarea class="form-control" id="descricao" name="descricao" rows="4" placeholder="Digite a descrição do projeto"></textarea>
+                </div>
+
+                {% include 'membros.html' %}
+
+                {% include 'tags.html' %}        
+                
+                <button type="submit" class="btn btn-success">Salvar Projeto</button>
+                <a href="{% url 'projetos' %}" class="btn btn-secondary">Voltar</a>
+            </form>
         </div>
-
-        <div class="mb-3">
-            <label for="descricao" class="form-label">Descrição</label>
-            <textarea class="form-control" id="descricao" name="descricao" rows="4" placeholder="Digite a descrição do projeto"></textarea>
-        </div>
-
-
-        {% include 'membros.html' %}
-
-        {% include 'tags.html' %}        
-        
-        <button type="submit" class="btn btn-primary">Salvar Projeto</button>
-        <a href="{% url 'projetos' %}" class="btn btn-secondary">Voltar</a>
-    </form>
+    </div>
 </div>
 
 <script src="{% static 'tags.js' %}"></script>

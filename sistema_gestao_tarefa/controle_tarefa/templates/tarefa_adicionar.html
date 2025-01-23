@@ -6,11 +6,9 @@
 {% block content %}
 <div class="container my-5">
     <div class="card shadow">
-        <div class="card-header bg-success text-white">
-            <h2 class="mb-0">Adicionar Tarefa</h2>
-        </div>
         <div class="card-body">
-            <form method="POST" action="{% url 'tarefa_adicionar' projeto.id %}">
+            <h1 class="mb-4">Cadastrar nova Tarefa</h1>
+            <form method="POST" action="{% url 'tarefa_adicionar' id_projeto %}">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="titulo" class="form-label">Título</label>
@@ -26,7 +24,7 @@
                     <label for="atribuido_a" class="form-label">Atribuído a</label>
                     <select class="form-select" id="atribuido_a" name="atribuido_a">
                         <option value="" selected>Sem atribuição</option>
-                        {% for membro in projeto.membros.all %}
+                        {% for membro in membros_do_projeto %}
                             <option value="{{ membro.id }}">{{ membro.username }}</option>
                         {% endfor %}
                     </select>
@@ -43,19 +41,13 @@
 
                 <div class="mb-3">
                     <label for="data_prazo_final" class="form-label">Prazo Final</label>
-                    <input type="date" class="form-control" id="data_prazo_final" name="data_prazo_final">
+                    <input type="date" class="form-control" id="data_prazo_final" name="data_prazo_final" required min="{{ hoje }}">
                 </div>
-                <!--
-                <div class="mb-3">
-                    <label for="tags" class="form-label">Tags</label>
-                    <input type="text" class="form-control" id="tags" name="tags" placeholder="Separe as tags com vírgulas">
-                    <small class="text-muted">Exemplo: urgente, frontend, backend</small>
-                </div>
-                -->
+
                 {% include 'tags.html' %}
 
                 <button type="submit" class="btn btn-success">Adicionar Tarefa</button>
-                <a href="{% url 'projeto_detalhes' projeto.id %}" class="btn btn-secondary">Voltar</a>
+                <a href="{% url 'projeto_detalhes' id_projeto %}" class="btn btn-secondary">Voltar</a>
             </form>
         </div>
     </div>

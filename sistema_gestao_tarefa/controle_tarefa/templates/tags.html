@@ -2,8 +2,7 @@
 <div id="tags-container" class="d-flex flex-wrap gap-2">
     {% for tag in tags %}
     <span 
-        class="badge {% if tag in projeto.tags.all %}bg-primary{% else %}bg-secondary{% endif %} tag-toggle" 
-        data-tag-id="{{ tag.id }}">
+        class="badge {% if tag in projeto.tags.all %}bg-primary{% else %}bg-secondary{% endif %} tag-toggle">
         {{ tag.nome }}
     </span>
     {% endfor %}

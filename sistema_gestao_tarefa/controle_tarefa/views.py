@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
 
+from datetime import date
 
 from .models import Projeto
 from .models import Tag
@@ -42,7 +43,6 @@ def projeto_adicionar(request):
         nome = request.POST.get('nome')
         descricao = request.POST.get('descricao')
         membros_ids = request.POST.get('membros', '')
-        tags_nomes = request.POST.get('tags', '').split(',')
 
         # Criar projeto
         projeto = Projeto.objects.create(
@@ -56,11 +56,11 @@ def projeto_adicionar(request):
         membros = User.objects.filter(id__in=membros_ids)
         projeto.membros.set(membros)
 
-        # Processar tags (verificar se existe ou criar nova, evitando tags vazias)
-        for tag_nome in tags_nomes:
-            tag_nome = tag_nome.strip()
-            if tag_nome:  # Apenas processa se o nome da tag não estiver vazio
-                tag, _ = Tag.objects.get_or_create(nome=tag_nome)
+        tags_input = request.POST.get('tags', '')
+        if tags_input:
+            tags = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
+            for tag in tags:
+                tag, _ = Tag.objects.get_or_create(nome=tag)
                 projeto.tags.add(tag)
 
         return redirect('projetos')
@@ -93,14 +93,12 @@ def projeto_alterar(request, id):
             Tarefa.objects.filter(projeto=projeto, atribuido_a__id__in=membros_removidos).update(atribuido_a=None)
 
         tags_input = request.POST.get('tags', '')
-        tags = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
-        tag_ids = [int(tag) for tag in tags if tag.isdigit()]
-        tags_nomes = [tag for tag in tags if not tag.isdigit()]
-
-        projeto.tags.set(Tag.objects.filter(id__in=tag_ids))
-        for tag_nome in tags_nomes:
-            tag, _ = Tag.objects.get_or_create(nome=tag_nome)
-            projeto.tags.add(tag)
+        if tags_input:
+            tags = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
+            tags_objs = [Tag.objects.get_or_create(nome=tag)[0] for tag in tags]
+            projeto.tags.set(tags_objs)
+        else:
+            projeto.tags.set([])
 
         return HttpResponseRedirect(reverse('projetos'))
 
@@ -131,7 +129,7 @@ def tarefas(request):
 @login_required(login_url='/auth/login')
 def tarefa_adicionar(request, id_projeto):
     projeto = get_object_or_404(Projeto, id=id_projeto)
-
+    
     if request.method == 'POST':
         titulo = request.POST.get('titulo')
         descricao = request.POST.get('descricao', '')
@@ -151,15 +149,18 @@ def tarefa_adicionar(request, id_projeto):
             data_prazo_final=data_prazo_final
         )
 
+        tags_input = request.POST.get('tags', '')
         if tags_input:
-            tag_nomes = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
-            for nome in tag_nomes:
-                tag, created = Tag.objects.get_or_create(nome=nome)
+            tags = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
+            for tag in tags:
+                tag, _ = Tag.objects.get_or_create(nome=tag)
                 tarefa.tags.add(tag)
 
         tarefa.save()
         messages.success(request, 'Tarefa adicionada com sucesso!')
         return redirect('projeto_detalhes', id=projeto.id)
 
+    membros_do_projeto = projeto.membros.all()
+    hoje = date.today().strftime('%Y-%m-%d')
     tags = Tag.objects.all()
-    return render(request, 'tarefa_adicionar.html', {'projeto': projeto, 'tags': tags})
+    return render(request, 'tarefa_adicionar.html', {'membros_do_projeto': membros_do_projeto, 'tags': tags, 'id_projeto': id_projeto, 'hoje': hoje})
