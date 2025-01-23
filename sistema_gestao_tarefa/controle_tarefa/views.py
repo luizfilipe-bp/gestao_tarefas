@@ -164,3 +164,20 @@ def tarefa_adicionar(request, id_projeto):
     hoje = date.today().strftime('%Y-%m-%d')
     tags = Tag.objects.all()
     return render(request, 'tarefa_adicionar.html', {'membros_do_projeto': membros_do_projeto, 'tags': tags, 'id_projeto': id_projeto, 'hoje': hoje})
+
+@login_required(login_url='/auth/login')
+def tarefa_alterar(request, id):
+    tarefa = Tarefa.objects.get(id=id)
+
+
+    tags = Tag.objects.all()
+    membros_do_projeto = tarefa.projeto.membros.all()   
+    return render(request, 'tarefa_alterar.html', {'tarefa': tarefa, membros_do_projeto: 'membros_do_projeto', 'tags': tags})
+
+
+@login_required(login_url='/auth/login')
+def tarefa_excluir(request, id):
+    tarefa = Tarefa.objects.get(id=id)     
+    tarefa.delete()
+
+    return HttpResponseRedirect(reverse('projeto_detalhes'))

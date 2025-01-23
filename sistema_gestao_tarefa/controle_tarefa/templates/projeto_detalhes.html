@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 
+{% block title %}Detalhes do Projeto{% endblock %}
 {% block content %}
 <div class="container my-5">
     <div class="card shadow mb-5">
@@ -37,47 +38,57 @@
         <a href="{% url 'tarefa_adicionar' projeto.id %}" class="btn btn-success">Adicionar nova Tarefa</a>
     </div>
     {% if tarefas_do_projeto %}
-        <ul class="list-group">
-            {% for tarefa in tarefas_do_projeto %}
-                <li class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h5 class="mb-1">{{ tarefa.titulo }}</h5>
-                        <span class="badge {% if tarefa.status == 'Feito' %}bg-success{% elif tarefa.status == 'Em andamento' %}bg-warning text-dark{% elif tarefa.status == 'To Do' %}bg-danger{% else %}bg-secondary{% endif %} px-3 py-2">
-                            {{ tarefa.status }}
-                        </span>
+    <div class="row">
+        {% for tarefa in tarefas_do_projeto %}
+            <div class="col-md-4 mb-3">
+                <a href="{% url 'tarefa_alterar' tarefa.id %}" class="text-decoration-none">
+                    <div class="card h-100 tarefa-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="card-title mb-0">{{ tarefa.titulo }}</h5>
+                                <span class="badge {% if tarefa.status == 'Feito' %}bg-success{% elif tarefa.status == 'Em andamento' %}bg-warning text-dark{% elif tarefa.status == 'To Do' %}bg-danger{% else %}bg-secondary{% endif %} px-3 py-2">
+                                    {{ tarefa.status }}
+                                </span>
+                            </div>
+                            <p class="card-text text-muted mt-2">{{ tarefa.descricao }}</p>
+                            <p class="mb-1">
+                                <strong>Pertence a:</strong> 
+                                {% if tarefa.atribuido_a %}
+                                    {{ tarefa.atribuido_a }}
+                                {% else %}
+                                    <span class="text-muted">Sem atribuição</span>
+                                {% endif %}
+                            </p>
+                            <div class="d-flex justify-content-between">
+                                <span><strong>Criado em:</strong> {{ tarefa.data_criacao|date:"d/m/Y" }}</span>
+                                <span><strong>Prazo final:</strong> {{ tarefa.data_prazo_final|date:"d/m/Y" }}</span>
+                            </div>
+                            <div class="mt-2">
+                                <strong>Tags:</strong>
+                                {% for tag in tarefa.tags.all %}
+                                    <span class="badge bg-primary">{{ tag.nome }}</span>
+                                {% empty %}
+                                    <span class="text-muted">Nenhuma tag</span>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
-
-                    <p class="mb-1 text-muted">{{ tarefa.descricao }}</p>
-                    
-                    <p class="mb-0">
-                        <strong>Pertence a:</strong> 
-                        {% if tarefa.atribuido_a %}
-                            {{ tarefa.atribuido_a }}
-                        {% else %}
-                            <span class="text-muted">Sem atribuição</span>
-                        {% endif %}
-                    </p>
-
-                    <div class="d-flex justify-content-between">
-                        <span><strong>Criado em:</strong> {{ tarefa.data_criacao|date:"d/m/Y H:i" }}</span>
-                        <span class="ms-auto"><strong>Prazo final:</strong> {{ tarefa.data_prazo_final|date:"d/m/Y" }}</span>
-                    </div>
-
-
-                    <p class="mb-0">
-                        <strong>Tags:</strong>
-                        {% for tag in tarefa.tags.all %}
-                            <span class="badge bg-primary">{{ tag.nome }}</span>
-                        {% empty %}
-                            <span class="text-muted">Nenhuma tag</span>
-                        {% endfor %}
-                    </p>
-                </li>
-            {% endfor %}
-        </ul>
+                </a>
+            </div>
+        {% endfor %}
+        </div>
     {% else %}
         <p class="text-muted">Este projeto ainda não possui tarefas.</p>
     {% endif %}
 </div>
+<style>
+    .tarefa-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .tarefa-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+    }
+</style>
 {% endblock %}
-

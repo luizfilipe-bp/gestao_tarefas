@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %} 
+
+{% block title %}Alterar Tarefa{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="card shadow">
+        <div class="card-body">
+            <h1 class="mb-4">Alterar Tarefa</h1>
+            
+            <form method="POST" action="{% url 'tarefa_alterar' tarefa.id %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="titulo" class="form-label">Título</label>
+                    <input type="text" class="form-control" id="titulo" name="titulo" value="{{ tarefa.titulo }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="descricao" class="form-label">Descrição</label>
+                    <textarea class="form-control" id="descricao" name="descricao" rows="4">{{ tarefa.descricao }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="atribuido_a" class="form-label">Atribuído a</label>
+                    <select class="form-select" id="atribuido_a" name="atribuido_a">
+                        <option value="" {% if not tarefa.atribuido_a %}selected{% endif %}>Sem atribuição</option>
+                        {% for membro in membros_do_projeto %}
+                            <option value="{{ membro.id }}" {% if membro == tarefa.atribuido_a %}selected{% endif %}>{{ membro.username }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="To Do" {% if tarefa.status == 'To Do' %}selected{% endif %}>To Do</option>
+                        <option value="Em andamento" {% if tarefa.status == 'Em andamento' %}selected{% endif %}>Em andamento</option>
+                        <option value="Feito" {% if tarefa.status == 'Feito' %}selected{% endif %}>Feito</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="data_prazo_final" class="form-label">Prazo Final</label>
+                    <input type="date" class="form-control" id="data_prazo_final" name="data_prazo_final" value="{{ tarefa.data_prazo_final|date:'Y-m-d' }}" required>
+                </div>
+
+                {% include 'tags.html' %}
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <div>
+                        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                        <a href="{% url 'projeto_detalhes' tarefa.projeto.id %}" class="btn btn-secondary">Voltar</a>
+                    </div>
+                    <button id="delete-project" class="btn btn-danger" onclick="confirmDeletion('/projetos/excluir/{{projeto.id}}')">Excluir tarefa
+                    </button>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'tags.js' %}"></script>
+
+
+    
+{% endblock %}
