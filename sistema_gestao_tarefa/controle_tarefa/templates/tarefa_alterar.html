@@ -42,7 +42,7 @@
 
                 <div class="mb-3">
                     <label for="data_prazo_final" class="form-label">Prazo Final</label>
-                    <input type="date" class="form-control" id="data_prazo_final" name="data_prazo_final" value="{{ tarefa.data_prazo_final|date:'Y-m-d' }}" required>
+                    <input type="date" class="form-control" id="data_prazo_final" name="data_prazo_final" value="{{ tarefa.data_prazo_final|date:'Y-m-d' }}" required min="{{ hoje }}">
                 </div>
 
                 {% include 'tags.html' %}
@@ -51,18 +51,15 @@
                         <button type="submit" class="btn btn-success">Salvar Alterações</button>
                         <a href="{% url 'projeto_detalhes' tarefa.projeto.id %}" class="btn btn-secondary">Voltar</a>
                     </div>
-                    <button id="delete-project" class="btn btn-danger" onclick="confirmDeletion('/projetos/excluir/{{projeto.id}}')">Excluir tarefa
-                    </button>
-
-                </div>
-            </form>
+                    <a id="delete-project" href="{% url 'tarefa_excluir' tarefa.id %}" class="btn btn-danger" onclick="confirm('Tem certeza que deseja excluir esta tarefa?')">Excluir tarefa</a>
+                </button>
+                
+            </div>
+        </form>
 
         </div>
     </div>
 </div>
 
 <script src="{% static 'tags.js' %}"></script>
-
-
-    
 {% endblock %}

@@ -16,7 +16,6 @@ from django.contrib.auth.models import User
 @login_required(login_url='/auth/login')
 def projetos(request):
     usuario_logado = request.user
-    # projetos_do_usuario = usuario_logado.projetos_criados.all()
     projetos_do_usuario = Projeto.objects.filter(criador=usuario_logado) | Projeto.objects.filter(membros=usuario_logado)
     projetos_do_usuario = projetos_do_usuario.distinct()
     
@@ -44,14 +43,12 @@ def projeto_adicionar(request):
         descricao = request.POST.get('descricao')
         membros_ids = request.POST.get('membros', '')
 
-        # Criar projeto
         projeto = Projeto.objects.create(
             nome=nome,
             descricao=descricao,
             criador=request.user
         )
 
-        # Associar membros
         membros_ids = [int(mid) for mid in membros_ids.split(',') if mid.isdigit()]
         membros = User.objects.filter(id__in=membros_ids)
         projeto.membros.set(membros)
@@ -65,7 +62,7 @@ def projeto_adicionar(request):
 
         return redirect('projetos')
 
-    usuarios = User.objects.exclude(id=request.user.id).exclude(is_superuser=True).exclude(is_staff=True)
+    usuarios = User.objects.exclude(is_superuser=True).exclude(is_staff=True)
     tags = Tag.objects.all()
     return render(request, 'projeto_adicionar.html', {'usuarios': usuarios, 'tags': tags})
 
@@ -157,7 +154,7 @@ def tarefa_adicionar(request, id_projeto):
                 tarefa.tags.add(tag)
 
         tarefa.save()
-        messages.success(request, 'Tarefa adicionada com sucesso!')
+        # messages.success(request, 'Tarefa adicionada com sucesso!')
         return redirect('projeto_detalhes', id=projeto.id)
 
     membros_do_projeto = projeto.membros.all()
@@ -169,10 +166,29 @@ def tarefa_adicionar(request, id_projeto):
 def tarefa_alterar(request, id):
     tarefa = Tarefa.objects.get(id=id)
 
+    if request.method == "POST":
+        tarefa.titulo = request.POST.get('titulo', tarefa.titulo).strip()
+        tarefa.descricao = request.POST.get('descricao', tarefa.descricao).strip()
+        tarefa.atribuido_a_id = request.POST.get('atribuido_a', None)
+        tarefa.status = request.POST.get('status', tarefa.status)
+        tarefa.data_prazo_final = request.POST.get('data_prazo_final', tarefa.data_prazo_final)
 
-    tags = Tag.objects.all()
+        tarefa.tags.clear()
+        tags_input = request.POST.get('tags', '')
+        tags = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
+        for tag_nome in tags:
+            tag, _ = Tag.objects.get_or_create(nome=tag_nome)
+            tarefa.tags.add(tag)
+
+        tarefa.save()
+        return redirect('projeto_detalhes', id=tarefa.projeto.id)
+
+
     membros_do_projeto = tarefa.projeto.membros.all()   
-    return render(request, 'tarefa_alterar.html', {'tarefa': tarefa, membros_do_projeto: 'membros_do_projeto', 'tags': tags})
+    tags = Tag.objects.all()
+    hoje = date.today().strftime('%Y-%m-%d')
+    return render(request, 'tarefa_alterar.html', {'tarefa': tarefa, 'membros_do_projeto': membros_do_projeto, 'tags': tags, 'hoje': hoje})
+
 
 
 @login_required(login_url='/auth/login')
@@ -180,4 +196,5 @@ def tarefa_excluir(request, id):
     tarefa = Tarefa.objects.get(id=id)     
     tarefa.delete()
 
-    return HttpResponseRedirect(reverse('projeto_detalhes'))
+    id_projeto = tarefa.projeto.id
+    return HttpResponseRedirect(reverse('projeto_detalhes', args=[id_projeto]))

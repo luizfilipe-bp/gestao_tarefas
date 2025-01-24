@@ -4,46 +4,49 @@
 
 {% block content %}
 <div class="container my-5">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <h1 class="mb-0">Alterar Projeto</h1>
-        <div>
-            <button id="toggle-edit" class="btn btn-warning me-2">Habilitar Edição</button>
-            <button id="delete-project" class="btn btn-danger" onclick="confirmDeletion('/projetos/excluir/{{projeto.id}}')">Excluir projeto
-            </button>
+    <div class="card shadow">
+        <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h1 class="mb-0">Alterar Projeto</h1>
+                    <div>
+                        <button id="toggle-edit" class="btn btn-warning me-2">Habilitar Edição</button>
+                        <button id="delete-project" class="btn btn-danger" onclick="confirmarExclusao('/projetos/excluir/{{projeto.id}}')">Excluir projeto
+                        </button>
+                    </div>
+                </div> 
+                    <form method="POST" action="{% url 'projeto_alterar' projeto.id %}">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="nome" class="form-label">Nome do Projeto</label>
+                            <input type="text" class="form-control" id="nome" name="nome" value="{{ projeto.nome }}" required disabled>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição</label>
+                            <textarea class="form-control" id="descricao" name="descricao" rows="4" required disabled>{{ projeto.descricao }}</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="criador" class="form-label">Criador</label>
+                        <input type="text" class="form-control" id="criador" value="{{ projeto.criador.username }}" disabled>
+                    </div>
+                    
+                    {% include 'membros.html' %}
+                    
+                    <div class="mb-3">
+                        <label for="data_criacao" class="form-label">Data de Criação</label>
+                        <input type="text" class="form-control" id="data_criacao" value="{{ projeto.data_criacao }}" disabled>
+                    </div>
+                    
+                    {% include 'tags.html' %}
+                    
+                    <button id="save-button" type="submit" class="btn btn-success opacity-75" disabled>Salvar Alterações</button>
+                    <a href="{% url 'projetos' %}" class="btn btn-secondary">Voltar</a>
+                </form>
+            </div>
         </div>
     </div>
-    
-    <form method="POST" action="{% url 'projeto_alterar' projeto.id %}">
-        {% csrf_token %}
-        
-        <div class="mb-3">
-            <label for="nome" class="form-label">Nome do Projeto</label>
-            <input type="text" class="form-control" id="nome" name="nome" value="{{ projeto.nome }}" required disabled>
-        </div>
-
-        <div class="mb-3">
-            <label for="descricao" class="form-label">Descrição</label>
-            <textarea class="form-control" id="descricao" name="descricao" rows="4" required disabled>{{ projeto.descricao }}</textarea>
-        </div>
-
-        <div class="mb-3">
-            <label for="criador" class="form-label">Criador</label>
-            <input type="text" class="form-control" id="criador" value="{{ projeto.criador.username }}" disabled>
-        </div>
-
-        {% include 'membros.html' %}
-
-        <div class="mb-3">
-            <label for="data_criacao" class="form-label">Data de Criação</label>
-            <input type="text" class="form-control" id="data_criacao" value="{{ projeto.data_criacao }}" disabled>
-        </div>
-
-        {% include 'tags.html' %}
-
-        <button id="save-button" type="submit" class="btn btn-success opacity-75" disabled>Salvar Alterações</button>
-        <a href="{% url 'projetos' %}" class="btn btn-secondary">Voltar</a>
-    </form>
-</div>
 
 
 <script src="{% static 'tags.js' %}"></script>
@@ -110,5 +113,10 @@
         toggleEdit();
         toggleEditButton.addEventListener('click', toggleEdit);
     });
+    function confirmarExclusao(url) {
+        if (confirm("Você tem certeza que deseja excluir este projeto? Essa ação não pode ser desfeita.")) {
+            window.location.href = url; 
+        }
+    }
 </script>
 {% endblock %}

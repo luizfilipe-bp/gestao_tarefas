@@ -1,16 +1,26 @@
 <!-- Tags Container -->
 <div id="tags-container" class="d-flex flex-wrap gap-2">
     {% for tag in tags %}
-    <span 
-        class="badge {% if tag in projeto.tags.all %}bg-primary{% else %}bg-secondary{% endif %} tag-toggle">
-        {{ tag.nome }}
-    </span>
+        {% if projeto %}
+            <span 
+                class="badge {% if tag in projeto.tags.all %}bg-primary{% else %}bg-secondary{% endif %} tag-toggle">
+                {{ tag.nome }}
+            </span>
+        {% elif tarefa %}  
+            <span 
+                class="badge {% if tag in tarefa.tags.all %}bg-primary{% else %}bg-secondary{% endif %} tag-toggle">
+                {{ tag.nome }}
+            </span>
+
+        {% else %}
+            <span class="badge bg-secondary tag-toggle">{{ tag.nome }}</span>
+        {% endif %}
+    
     {% endfor %}
 </div>
 <input type="hidden" id="selected-tags" name="tags" value="{% for tag in projeto.tags.all %}{{ tag.id }},{% endfor %}">
 <small class="form-text text-muted">Clique em uma tag para adicioná-la ou removê-la.</small>
 
-<!-- Campo para adicionar nova tag -->
 <div class="mb-3">
     <label for="nova_tag" class="form-label">Adicionar Nova Tag</label>
     <input type="text" class="form-control" id="nova_tag" name="nova_tag" placeholder="Digite o nome da nova tag">
