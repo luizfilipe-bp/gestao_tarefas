@@ -3,6 +3,10 @@ from django.contrib.auth.models import User
 
 class Tag(models.Model):
     nome = models.CharField(max_length=50, unique=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)  
+
+    def __str__(self):
+        return self.nome
 
 class Projeto(models.Model):
     nome = models.CharField(max_length=200)

@@ -11,4 +11,7 @@ urlpatterns = [
     path('tarefas/adicionar/<int:id_projeto>', views.tarefa_adicionar, name='tarefa_adicionar'),
     path('tarefas/alterar/<int:id>', views.tarefa_alterar, name='tarefa_alterar'),
     path('tarefas/excluir/<int:id>', views.tarefa_excluir, name='tarefa_excluir'),
+    path('tags', views.tags, name='tags'),
+    path('tags/editar/<int:tag_id>', views.tag_editar, name='tag_editar'),
+    path('tags/excluir/<int:tag_id>/', views.tag_excluir, name='tag_excluir'),
 ]

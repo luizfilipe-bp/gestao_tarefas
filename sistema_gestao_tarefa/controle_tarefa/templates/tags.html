@@ -1,28 +1,32 @@
-<!-- Tags Container -->
-<div id="tags-container" class="d-flex flex-wrap gap-2">
-    {% for tag in tags %}
-        {% if projeto %}
-            <span 
-                class="badge {% if tag in projeto.tags.all %}bg-primary{% else %}bg-secondary{% endif %} tag-toggle">
-                {{ tag.nome }}
-            </span>
-        {% elif tarefa %}  
-            <span 
-                class="badge {% if tag in tarefa.tags.all %}bg-primary{% else %}bg-secondary{% endif %} tag-toggle">
-                {{ tag.nome }}
-            </span>
+{% extends 'base.html' %}
 
-        {% else %}
-            <span class="badge bg-secondary tag-toggle">{{ tag.nome }}</span>
-        {% endif %}
-    
-    {% endfor %}
+{% block content %}
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="mb-4">Minhas Tags</h1>
+        
+    </div>
+    {% if tags %}
+        <ul class="list-group">
+            {% for tag in tags %}
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-1">{{ tag.nome }}</h5>
+                        <span class="badge bg-secondary px-3 py-2">
+                            Criado em: {{ tag.data_criacao|date:"d/m/Y H:i" }}
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-end mt-2">
+                        <form method="post" action="{% url 'tag_excluir' tag.id %}" onsubmit="return confirm('Tem certeza que deseja excluir esta tag?');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">Excluir</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-muted">Você ainda não possui tags cadastradas.</p>
+    {% endif %}
 </div>
-<input type="hidden" id="selected-tags" name="tags" value="{% for tag in projeto.tags.all %}{{ tag.id }},{% endfor %}">
-<small class="form-text text-muted">Clique em uma tag para adicioná-la ou removê-la.</small>
-
-<div class="mb-3">
-    <label for="nova_tag" class="form-label">Adicionar Nova Tag</label>
-    <input type="text" class="form-control" id="nova_tag" name="nova_tag" placeholder="Digite o nome da nova tag">
-    <small class="form-text text-muted">Pressione Enter para adicionar.</small>
-</div>
+{% endblock %}

@@ -44,7 +44,7 @@
                     <input type="date" class="form-control" id="data_prazo_final" name="data_prazo_final" required min="{{ hoje }}">
                 </div>
 
-                {% include 'tags.html' %}
+                {% include 'tags_container.html' %}
 
                 <button type="submit" class="btn btn-success">Adicionar Tarefa</button>
                 <a href="{% url 'projeto_detalhes' id_projeto %}" class="btn btn-secondary">Voltar</a>

@@ -198,3 +198,27 @@ def tarefa_excluir(request, id):
 
     id_projeto = tarefa.projeto.id
     return HttpResponseRedirect(reverse('projeto_detalhes', args=[id_projeto]))
+
+@login_required(login_url='/auth/login')
+def tags(request):
+    tags = Tag.objects.all()
+    return render(request, 'tags.html', {'tags': tags})
+
+@login_required(login_url='/auth/login')
+def tag_editar(request, tag_id):
+    tag = get_object_or_404(Tag, id=tag_id)
+
+    if request.method == "POST":
+        tag.nome = request.POST.get('nome', tag.nome).strip()
+        tag.save()
+        messages.success(request, f"A tag '{tag.nome}' foi alterada com sucesso!")
+        return redirect('tags')
+
+    return render(request, 'tag_editar.html', {'tag': tag})
+
+@login_required(login_url='/auth/login')
+def tag_excluir(request, tag_id):
+    tag = get_object_or_404(Tag, id=tag_id)
+    tag.delete()
+    messages.success(request, f"A tag '{tag.nome}' foi excluída com sucesso!")
+    return redirect('../../../tags')
