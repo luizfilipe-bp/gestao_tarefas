@@ -18,11 +18,7 @@ Tags
     
     {% endfor %}
 </div>
-{% if projeto %}
-    <input type="hidden" id="selected-tags" name="tags" value="{% for tag in projeto.tags.all %}{{ tag.nome }},{% endfor %}">
-{% elif tarefa %}
-    <input type="hidden" id="selected-tags" name="tags" value="{% for tag in tarefa.tags.all %}{{ tag.nome }},{% endfor %}">
-{% endif %}
+<input type="hidden" id="selected-tags" name="tags" value="{% for tag in projeto.tags.all %}{{ tag.nome }},{% endfor %}">
 <small class="form-text text-muted">Clique em uma tag para adicioná-la ou removê-la.</small>
 
 <div class="mb-3">

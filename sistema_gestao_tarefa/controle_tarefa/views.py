@@ -173,12 +173,11 @@ def tarefa_alterar(request, id):
         tarefa.status = request.POST.get('status', tarefa.status)
         tarefa.data_prazo_final = request.POST.get('data_prazo_final', tarefa.data_prazo_final)
 
-        tarefa.tags.clear()
         tags_input = request.POST.get('tags', '')
-        tags = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
-        for tag_nome in tags:
-            tag, _ = Tag.objects.get_or_create(nome=tag_nome)
-            tarefa.tags.add(tag)
+        if tags_input:
+            tags = [tag.strip() for tag in tags_input.split(',') if tag.strip()]
+            tags_objs = [Tag.objects.get_or_create(nome=tag)[0] for tag in tags]
+            tarefa.tags.set(tags_objs)
 
         tarefa.save()
         return redirect('projeto_detalhes', id=tarefa.projeto.id)
